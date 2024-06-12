@@ -1,14 +1,13 @@
 
 import string
 import random
-from datetime import datetime
 
 def random_date(month=0,day=1):
     year = 2024
     if month==0:
         month = random.randint(month,6)
     day = random.randint(day,29)
-    return datetime(year,month,day)
+    return dict(year=year,month=month,day=day)
 
 class Product:
     IMAGES = [
@@ -101,8 +100,7 @@ def orders(n=10)->list:
         order['state'] = Orders.state()
         order['product'] = Orders.product()
         order['openned on'] = Orders.openned()
-        order['deadline'] = Orders.deadline(order['openned on'].month,order['openned on'].day)
+        order['deadline'] = Orders.deadline(order['openned on']['month'],order['openned on']['day'])
         orders_.append(order)
     return orders_
 
-print(orders())

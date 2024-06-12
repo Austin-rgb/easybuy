@@ -1,13 +1,17 @@
-from demodata import products,orders
+from .demodata import products,orders
+from django.http import HttpResponse
+from json import dumps
 
-def available_products():
-    products = products()
+def available_products(request):
+    products_ = products()
     context = {}
-    context['products'] = products
+    context['products'] = products_
     # return render_template('available_products.html', context = context)
+    return HttpResponse(dumps(products_))
     
-def orders():
-    orders  = orders()
+def orders(request):
+    orders_  = orders()
     context = {}
-    context['orders'] = orders
+    context['orders'] = orders_
     # return render_template('orders.html', context = context)
+    return HttpResponse(dumps(orders_))
