@@ -25,6 +25,8 @@ This page allow the user to:
         <p>Price: ${{ product.price }}</p>
         <p>Stock: {{ product.stock }}</p>
         <p>{% if product.available %}Available{% else %}Out of Stock{% endif %}</p>
+        <a href="{% url 'add_to_cart' product.id %}">Add to Cart</a>
+      
     </div>
     <hr>
     {% endfor %}
