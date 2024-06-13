@@ -11,7 +11,7 @@
                 <li>{{ item.quantity }} x {{ item.product.name }} - ${{ item.product.price }}</li>
             {% endfor %}
         </ul>
-        <p>Total: ${{ cart.items.all|sum:"product.price|floatformat:2" }}</p>
+        <p>Total: ${{ total|floatformat:2 }}</p>
     {% else %}
         <p>Your cart is empty.</p>
     {% endif %}

@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Product, Cart, CartItem, Order
 from .forms import ProductForm
 from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 
 def register(request):
@@ -32,7 +33,9 @@ def add_to_cart(request, product_id):
 @login_required
 def cart_detail(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
-    return render(request, 'store/cart_detail.html', {'cart': cart})
+    total = sum(item.product.price * item.quantity for item in cart.items.all())
+    return render(request, 'store/cart_detail.html', {'cart': cart, 'total': total})
+    
 
 def add_demo_data(request):
     products()
@@ -55,9 +58,15 @@ def upload_product(request):
         form = ProductForm()
     return render(request, 'store/upload_product.html', {'form': form})
 
-class OrderListView(ListView):
-    paginate_by = 10
+class OrderListView(LoginRequiredMixin, ListView):
     model = Order
+    template_name = 'store/order_list.html'
+    context_object_name = 'orders'
+    paginate_by = 10  # Adjust as needed
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user).order_by('-openned')
+
 
 class PaymentView(View):
     def get():
