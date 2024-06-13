@@ -4,6 +4,18 @@ from .demodata import products
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Product, Cart, CartItem, Order
+from django.contrib.auth.forms import UserCreationForm
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('product_list')
+    else:
+        form = UserCreationForm()
+    return render(request, 'store/register.html', {'form': form})
 
 @login_required
 def add_to_cart(request, product_id):
