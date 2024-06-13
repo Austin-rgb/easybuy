@@ -20,13 +20,16 @@ This page allow the user to:
     <h1>Product List</h1>
     {% for product in products %}
     <div class="product">
+        {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:150px; height:auto;">
+        {% endif %}
         <h2>{{ product.name }}</h2>
         <p>{{ product.description }}</p>
         <p>Price: ${{ product.price }}</p>
         <p>Stock: {{ product.stock }}</p>
         <p>{% if product.available %}Available{% else %}Out of Stock{% endif %}</p>
         <a href="{% url 'add_to_cart' product.id %}">Add to Cart</a>
-      
+
     </div>
     <hr>
     {% endfor %}
