@@ -1,7 +1,7 @@
 
 import string
 import random
-
+from .models import Product, Order
 def random_date(month=0,day=1):
     year = 2024
     if month==0:
@@ -9,18 +9,18 @@ def random_date(month=0,day=1):
     day = random.randint(day,29)
     return dict(year=year,month=month,day=day)
 
-class Product:
+class Products:
     IMAGES = [
-    'image1.png',
-    'image2.png',
-    'image3.png',
-    'image4.png',
-    'image5.png',
-    'image6.png',
-    'image7.png',
-    'image8.png',
-    'image9.png',
-    'image0.png',
+    'image1.jpeg',
+    'image2.jpeg',
+    'image3.jpeg',
+    'image4.jpeg',
+    'image5.jpeg',
+    'image6.jpeg',
+    'image7.jpeg',
+    'image8.jpeg',
+    'image9.jpeg',
+    'image0.jpeg',
     ]
 
     DELIVERY_OPTIONS = [
@@ -43,19 +43,19 @@ class Product:
         return ''.join([a+b for a,b in zip(consonunts,vowels)])
     
     def description():
-        return ' '.join(Product.name() for i in range(20))
+        return ' '.join(Products.name() for i in range(20))
 
     def image():
-        return random.choice(Product.IMAGES)
+        return random.choice(Products.IMAGES)
     
     def delivery_info():
-        return random.choice(Product.DELIVERY_OPTIONS)
+        return random.choice(Products.DELIVERY_OPTIONS)
     
     def remaining():
         return random.randint(0,1000)
     
     def price():
-        return random.choice(Product.PRICE)
+        return random.choice(Products.PRICE)
     
 
 class Orders:
@@ -69,7 +69,7 @@ class Orders:
         return random.choice(Orders.STATES)
     
     def product():
-        return Product.name()
+        return Products.name()
     
     def openned():
         return random_date()
@@ -79,28 +79,28 @@ class Orders:
     
 
 def products(n=10)->list:
-    products_ = []
     for i in range(n):
-        product = {}
-        product['name']=Product.name()
-        product['description']=Product.description()
-        product['image1']=Product.image()
-        product['image2']=Product.image()
-        product['image3']=Product.image()
-        product['remaining']=Product.remaining()
-        product['delivery']=Product.delivery_info()
-        product['price']=Product.price()
-        products_.append(product)
-    return products_
+        product = Product(
+            name=Products.name(),
+            description=Products.description(),
+            image1=Products.image(),
+            image2=Products.image(),
+            image3=Products.image(),
+            stock=Products.remaining(),
+            delivery=Products.delivery_info(),
+            price=Products.price(),
+            available = True
+        )
+        product.save()
+        
 
 def orders(n=10)->list:
-    orders_ = []
     for i in range(n):
-        order = {}
-        order['state'] = Orders.state()
-        order['product'] = Orders.product()
-        order['openned on'] = Orders.openned()
-        order['deadline'] = Orders.deadline(order['openned on']['month'],order['openned on']['day'])
-        orders_.append(order)
-    return orders_
+        order = Order(
+            state = Orders.state(),
+            product= Orders.product(),
+            openned = Orders.openned(),
+            deadline = Orders.deadline()
+        )
+        order.save()
 

@@ -1,0 +1,51 @@
+<!--
+This is the main page for showing a list of products available on this platform
+This page allow the user to:
+    - Scroll through the products available
+    - search for an item
+    - get items based on some filters
+    - get items based on categories
+    - Select an individual item and open it in a separete page
+-->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Product List</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'store/styles.css' %}">
+</head>
+
+<body>
+    <h1>Product List</h1>
+    {% for product in products %}
+    <div class="product">
+        <h2>{{ product.name }}</h2>
+        <p>{{ product.description }}</p>
+        <p>Price: ${{ product.price }}</p>
+        <p>Stock: {{ product.stock }}</p>
+        <p>{% if product.available %}Available{% else %}Out of Stock{% endif %}</p>
+    </div>
+    <hr>
+    {% endfor %}
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</body>
+
+</html>
