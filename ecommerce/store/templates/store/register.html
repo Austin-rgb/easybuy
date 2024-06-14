@@ -3,13 +3,13 @@
 <head>
     <title>Register</title>
 </head>
-<body>
-    <h2>Register</h2>
-    <form method="post">
+<body style="font-family: Arial, sans-serif; margin: 20px;">
+    <h2 style="color: #4CAF50;">Register</h2>
+    <form method="post" style="display: flex; flex-direction: column; max-width: 300px; margin-top: 10px;">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Register</button>
+        <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer; margin-top: 10px;">Register</button>
     </form>
-    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'login' %}" style="margin-top: 20px; display: inline-block; color: #4CAF50;">Login</a>
 </body>
 </html>
