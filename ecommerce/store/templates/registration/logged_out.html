@@ -2,9 +2,28 @@
 <html>
 <head>
     <title>Logged Out</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            padding: 20px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h2>You have been logged out</h2>
-    <a href="{% url 'login' %}">Login again</a>
+    <div class="container">
+        <h2>You have been logged out</h2>
+        <a class="btn btn-primary" href="{% url 'login' %}">Login again</a>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
