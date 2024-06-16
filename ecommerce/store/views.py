@@ -1,13 +1,14 @@
 from django.shortcuts import render, HttpResponse
 from django.views.generic import ListView, View
-from .demodata import products
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from .models import Product, Cart, CartItem, Order
-from .forms import ProductForm
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+
+from .demodata import products
+from .models import Product, Cart, CartItem, Order
+from .forms import ProductForm, CustomUserCreationForm 
+
 
 def register(request):
     if request.method == 'POST':
@@ -17,7 +18,7 @@ def register(request):
             login(request, user)
             return redirect('product_list')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'store/register.html', {'form': form})
 
 @login_required

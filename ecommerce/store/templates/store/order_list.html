@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Orders</title>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'store/styles.css' %}">
-</head>
-<body>
+{% extends 'store/base.html' %}
+
+{% block title %}Product List{% endblock %}
+
+{% block content %}
     <h1>My Orders</h1>
     {% for order in orders %}
         <div class="order">
@@ -39,5 +36,4 @@
             </span>
         </div>
     {% endif %}
-</body>
-</html>
+{% endblock %}

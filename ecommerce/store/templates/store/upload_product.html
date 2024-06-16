@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Upload Product</title>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'store/styles.css' %}">
-</head>
-<body>
+{% extends 'store/base.html' %}
+
+{% block title %}Product List{% endblock %}
+
+{% block content %}
+
     <h2>Upload Product</h2>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -13,5 +11,4 @@
         <button type="submit">Upload</button>
     </form>
     <a href="{% url 'product_list' %}">Back to Product List</a>
-</body>
-</html>
+{% endblock %}
