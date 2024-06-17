@@ -4,15 +4,15 @@ from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
-from .demodata import products
-from .models import Product, Cart, CartItem, Order
+from .models import Product, Cart, CartItem, Order, Category
 from .forms import ProductForm, CustomUserCreationForm 
 
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
@@ -38,16 +38,32 @@ def cart_detail(request):
     return render(request, 'store/cart_detail.html', {'cart': cart, 'total': total})
     
 
-def add_demo_data(request):
-    products()
-    return HttpResponse('done')
-
 class ProductListView(ListView):
     paginate_by = 10
     model = Product
     template_name = 'store/product_list.html'
     context_object_name = 'products'
-    queryset = Product.objects.filter(available=True)
+    
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        category_id = self.request.GET.get('category')
+        queryset = Product.objects.all()
+        
+        if query:
+            queryset = queryset.filter(
+                Q(name__icontains=query) |
+                Q(description__icontains=query)
+            )
+        
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
+        
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
     
 def upload_product(request):
     if request.method == 'POST':

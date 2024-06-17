@@ -10,9 +10,11 @@ class Cart(models.Model):
     def __str__(self):
         return f"Cart of {self.user.username}"
 
+class Category (models.Model):
+    name = models.CharField(max_length=16)
 
 class Product(models.Model):
-    category = models.CharField(max_length=32)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE,default='general')
     name = models.CharField(max_length=200)
     description = models.TextField()
     image = models.ImageField(upload_to='product_images/', null=True, blank=True, storage=non_locking_storage)
@@ -22,7 +24,7 @@ class Product(models.Model):
     delivery = models.CharField(max_length=32)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
-    available = models.BooleanField()
+    available= models.BooleanField()
 
     def __str__(self):
         return self.name

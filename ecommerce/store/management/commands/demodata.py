@@ -1,7 +1,7 @@
 
 import string
 import random
-from .models import Product, Order
+from ...models import Product, Order
 def random_date(month=0,day=1):
     year = 2024
     if month==0:
@@ -45,8 +45,8 @@ class Products:
     def description():
         return ' '.join(Products.name() for i in range(20))
 
-    def image():
-        return random.choice(Products.IMAGES)
+    def image(category):
+        return f'product_images/{category}{random.randint(1,10)}.jpeg'
     
     def delivery_info():
         return random.choice(Products.DELIVERY_OPTIONS)
@@ -77,21 +77,32 @@ class Orders:
     def deadline(month,day):
         return random_date(month,day)
     
+categories= {
+    'Laptops':1,
+    'Smartphones':2,
+    'Desktops':3,
+    'Televisions':4,
+}
 
-def products(n=10)->list:
+def products(category, n=20)->list:
+    products_ = []
     for i in range(n):
-        product = Product(
+        product = dict(
+            category_id = categories[category],
             name=Products.name(),
             description=Products.description(),
-            image1=Products.image(),
-            image2=Products.image(),
-            image3=Products.image(),
+            image=Products.image(category),
+            image1=Products.image(category ),
+            image2=Products.image(category ),
+            image3=Products.image(category ),
             stock=Products.remaining(),
             delivery=Products.delivery_info(),
             price=Products.price(),
-            available = True
-        )
-        product.save()
+            available = True,
+            )
+        products_.append(product)
+
+    return products_
         
 
 def orders(n=10)->list:
