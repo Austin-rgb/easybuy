@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse
-from django.views.generic import ListView, View
+from django.views.generic import ListView, View, DetailView
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
@@ -47,6 +47,7 @@ class ProductListView(ListView):
     def get_queryset(self):
         query = self.request.GET.get('q')
         category_id = self.request.GET.get('category')
+        order_by = self.request.GET.get('order_by')
         queryset = Product.objects.all()
         
         if query:
@@ -57,7 +58,13 @@ class ProductListView(ListView):
         
         if category_id:
             queryset = queryset.filter(category_id=category_id)
-        
+            print('using category',category_id)
+            
+        if order_by:
+            queryset = queryset.order_by(order_by)
+            
+        else:
+            queryset = queryset.order_by('name')
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -85,19 +92,7 @@ class OrderListView(LoginRequiredMixin, ListView):
         return Order.objects.filter(user=self.request.user).order_by('-openned')
 
 
-class PaymentView(View):
-    def get():
-        products()
-
-    def post():
-        pass
-
-class AddItemView(View):
-    def get():
-        pass
-
-    def post():
-        pass
-
-class ProductView(View):
-    pass
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'store/product_detail.html'
+    context_object_name = 'product'

@@ -9,8 +9,8 @@
             <h4>Categories</h4>
             <ul class="list-group">
                 {% for category in categories %}
-                    <li class="list-group-item">
-                        <a href="?category={{ category.id }}">{{ category.name }}</a>
+                    <li class="list-group-item {% if selected_category == category.id|stringformat:"s" %}active{% endif %}">
+                        <a href="?category={{ category.id }}&q={{ request.GET.q }}">{{ category.name }}</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -19,15 +19,20 @@
             <form method="GET" action="{% url 'product_list' %}" class="form-inline mb-4">
                 <input name="q" class="form-control mr-sm-2" type="search" placeholder="Search products" aria-label="Search" value="{{ request.GET.q }}">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                <input type="hidden" name="category" value="{{ selected_category }}">
             </form>
 
             <div class="row">
                 {% for product in products %}
                     <div class="col-sm-12 col-md-6 col-lg-4 mb-4">
                         <div class="card h-100">
-                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                            <a href="{% url 'product_detail' product.id %}">
+                                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                            </a>
                             <div class="card-body">
-                                <h5 class="card-title">{{ product.name }}</h5>
+                                <h5 class="card-title">
+                                    <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+                                </h5>
                                 <p class="card-text">{{ product.description }}</p>
                                 <p class="card-text"><strong>${{ product.price }}</strong></p>
                                 <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>
@@ -44,13 +49,13 @@
                         <ul class="pagination justify-content-center">
                             {% if products.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page=1&q={{ request.GET.q }}" aria-label="First">
+                                    <a class="page-link" href="?page=1&category={{ selected_category }}&q={{ request.GET.q }}" aria-label="First">
                                         <span aria-hidden="true">&laquo;&laquo;</span>
                                         <span class="sr-only">First</span>
                                     </a>
                                 </li>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ products.previous_page_number }}&q={{ request.GET.q }}" aria-label="Previous">
+                                    <a class="page-link" href="?page={{ products.previous_page_number }}&category={{ selected_category }}&q={{ request.GET.q }}" aria-label="Previous">
                                         <span aria-hidden="true">&laquo;</span>
                                         <span class="sr-only">Previous</span>
                                     </a>
@@ -74,19 +79,19 @@
                                 {% if products.number == num %}
                                     <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
                                 {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
-                                    <li class="page-item"><a class="page-link" href="?page={{ num }}&q={{ request.GET.q }}">{{ num }}</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{ num }}&category={{ selected_category }}&q={{ request.GET.q }}">{{ num }}</a></li>
                                 {% endif %}
                             {% endfor %}
 
                             {% if products.has_next %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ products.next_page_number }}&q={{ request.GET.q }}" aria-label="Next">
+                                    <a class="page-link" href="?page={{ products.next_page_number }}&category={{ selected_category }}&q={{ request.GET.q }}" aria-label="Next">
                                         <span aria-hidden="true">&raquo;</span>
                                         <span class="sr-only">Next</span>
                                     </a>
                                 </li>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ products.paginator.num_pages }}&q={{ request.GET.q }}" aria-label="Last">
+                                    <a class="page-link" href="?page={{ products.paginator.num_pages }}&category={{ selected_category }}&q={{ request.GET.q }}" aria-label="Last">
                                         <span aria-hidden="true">&raquo;&raquo;</span>
                                         <span class="sr-only">Last</span>
                                     </a>
