@@ -33,7 +33,7 @@
                                 <h5 class="card-title">
                                     <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
                                 </h5>
-                                <p class="card-text">{{ product.description }}</p>
+                               
                                 <p class="card-text"><strong>${{ product.price }}</strong></p>
                                 <a href="{% url 'add_to_cart' product.id %}" class="btn btn-primary">Add to Cart</a>
                             </div>
