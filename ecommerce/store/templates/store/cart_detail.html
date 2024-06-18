@@ -1,18 +1,42 @@
 {% extends 'store/base.html' %}
 
-{% block title %}Product List{% endblock %}
+{% block title %}Cart{% endblock %}
 
 {% block content %}
-    <h1>Your Cart</h1>
-    {% if cart.items.exists %}
-        <ul>
+<div class="container mt-5">
+    <h2>Your Cart</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
             {% for item in cart.items.all %}
-                <li>{{ item.quantity }} x {{ item.product.name }} - ${{ item.product.price }}</li>
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.get_total_price }}</td>
+                <td>
+                    <form method="post" action="{% url 'cart_detail' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                        <input type="hidden" name="action" value="remove">
+                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                    </form>
+                </td>
+            </tr>
             {% endfor %}
-        </ul>
-        <p>Total: ${{ total|floatformat:2 }}</p>
-    {% else %}
-        <p>Your cart is empty.</p>
-    {% endif %}
-    <a href="{% url 'product_list' %}">Continue Shopping</a>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-end">
+        <h4>Total: ${{ cart.get_total_price }}</h4>
+    </div>
+    <div class="d-flex justify-content-end mt-3">
+        <a href="{% url 'payment_page' %}" class="btn btn-primary">Proceed to Payment</a>
+    </div>
+</div>
 {% endblock %}

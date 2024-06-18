@@ -8,7 +8,9 @@ from django.db.models import Q
 
 from .models import Product, Cart, CartItem, Order, Category
 from .forms import ProductForm, CustomUserCreationForm 
+from .shop import Shelf
 
+shelf = Shelf()
 
 def register(request):
     if request.method == 'POST':
@@ -32,10 +34,17 @@ def add_to_cart(request, product_id):
     return redirect('cart_detail')
 
 @login_required
-def cart_detail(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    total = sum(item.product.price * item.quantity for item in cart.items.all())
-    return render(request, 'store/cart_detail.html', {'cart': cart, 'total': total})
+def cart_detail(request): 
+    cart = get_object_or_404(Cart, user=request.user) 
+    if request.method == 'POST': 
+        action = request.POST.get('action') 
+        product_id = request.POST.get('product_id') 
+        if action == 'remove': 
+            product = get_object_or_404(Product, id=product_id)
+            cart_item = CartItem.objects.get(user=request.user, product=product) 
+            cart_item.delete() 
+            return redirect('cart_detail') 
+    return render(request, 'store/cart.html', {'cart': cart})
     
 
 class ProductListView(ListView):
@@ -96,3 +105,35 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'store/product_detail.html'
     context_object_name = 'product'
+
+
+
+@login_required
+def payment_page(request):
+    cart = Cart.objects.get(user=request.user)
+    payment_api = shelf.payment
+    total_amount = cart.get_total_price()
+
+    if request.method == 'POST':
+        reference_code = payment_api.pay(total_amount)
+        request.session['reference_code'] = reference_code
+        return redirect('payment_confirm')
+
+    return render(request, 'store/payment.html', {'total_amount': total_amount})
+
+@login_required
+def payment_confirm(request):
+    payment_api = shelf.payment
+    reference_code = request.session.get('reference_code')
+
+    if not reference_code:
+        return redirect('cart_detail')
+
+    payment_successful = payment_api.confirm(reference_code)
+
+    if payment_successful:
+        # Handle successful payment (e.g., clear the cart, create an order, etc.)
+        Cart.objects.get(user=request.user).items.clear()  # Clear the cart items
+        return render(request, 'store/payment_success.html')
+    else:
+        return render(request, 'store/payment_failure.html')
