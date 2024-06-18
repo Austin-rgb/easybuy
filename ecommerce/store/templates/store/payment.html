@@ -1,0 +1,14 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Payment{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Payment</h2>
+    <p>Total Amount: ${{ total_amount }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+    </form>
+</div>
+{% endblock %}

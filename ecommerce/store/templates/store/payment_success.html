@@ -1,0 +1,11 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Payment Successful{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Payment Successful</h2>
+    <p>Your payment has been successfully processed.</p>
+    <a href="{% url 'product_list' %}" class="btn btn-primary">Continue Shopping</a>
+</div>
+{% endblock %}
