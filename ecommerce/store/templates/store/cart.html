@@ -1,0 +1,41 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Your Cart</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                <th scope="col">Total</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% load custom_filters %}
+
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.price|floatformat:2 }}</td>
+                <td>${{ item.price|floatformat:2|mul:item.quantity }}</td>
+                <td>
+                    <!-- Add functionality for removing or updating items if needed -->
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-end">
+        <h4>Total: ${{ total_price|floatformat:2 }}</h4>
+    </div>
+    <div class="d-flex justify-content-end mt-3">
+        <a href="{% url 'payment_page' %}" class="btn btn-primary">Proceed to Payment</a>
+    </div>
+</div>
+{% endblock %}
