@@ -1,0 +1,19 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Order Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Order Details</h2>
+    <p>Order ID: {{ order.id }}</p>
+    <p>Total Price: ${{ order.total_price|floatformat:2 }}</p>
+    <p>Reference Code: {{ order.reference_code }}</p>
+    <p>Placed on: {{ order.created_at|date:"Y-m-d H:i" }}</p>
+    <h4>Products:</h4>
+    <ul>
+        {% for item in order.orderitem_set.all %}
+        <li>{{ item.product.name }} (Quantity: {{ item.quantity }})</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
