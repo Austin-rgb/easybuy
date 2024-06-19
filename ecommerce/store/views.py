@@ -23,29 +23,54 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, 'store/register.html', {'form': form})
 
-@login_required
+
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-    if not created:
-        cart_item.quantity += 1
+
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        if not created:
+            cart_item.quantity += 1
         cart_item.save()
+    else:
+        cart = request.session.get('cart', {})
+
+        if str(product_id) in cart:
+            cart[str(product_id)]['quantity'] += 1
+        else:
+            cart[str(product_id)] = {
+                'product_id': product_id,
+                'name': product.name,
+                'price': str(product.price),
+                'quantity': 1,
+            }
+
+        request.session['cart'] = cart
+
     return redirect('cart_detail')
 
-@login_required
-def cart_detail(request): 
-    cart = get_object_or_404(Cart, user=request.user) 
-    if request.method == 'POST': 
-        action = request.POST.get('action') 
-        product_id = request.POST.get('product_id') 
-        if action == 'remove': 
-            product = get_object_or_404(Product, id=product_id)
-            cart_item = CartItem.objects.get(user=request.user, product=product) 
-            cart_item.delete() 
-            return redirect('cart_detail') 
-    return render(request, 'store/cart.html', {'cart': cart})
-    
+
+def cart_detail(request):
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart_items = cart.items.all()
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+    else:
+        cart = request.session.get('cart', {})
+        cart_items = []
+        total_price = 0
+        for item in cart.values():
+            total_price += float(item['price']) * item['quantity']
+            cart_items.append({
+                'product_id': item['product_id'],
+                'name': item['name'],
+                'price': float(item['price']),
+                'quantity': item['quantity']
+            })
+
+    return render(request, 'store/cart.html', {'cart_items': cart_items, 'total_price': total_price})
+
 
 class ProductListView(ListView):
     paginate_by = 10
@@ -98,7 +123,7 @@ class OrderListView(LoginRequiredMixin, ListView):
     paginate_by = 10  # Adjust as needed
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user).order_by('-openned')
+        return Order.objects.filter(user=self.request.user).order_by('-created_at')
 
 
 class ProductDetailView(DetailView):
@@ -116,6 +141,7 @@ def payment_page(request):
 
     if request.method == 'POST':
         reference_code = payment_api.pay(total_amount)
+        shelf.buy()
         request.session['reference_code'] = reference_code
         return redirect('payment_confirm')
 
@@ -137,3 +163,41 @@ def payment_confirm(request):
         return render(request, 'store/payment_success.html')
     else:
         return render(request, 'store/payment_failure.html')
+
+
+
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    model = Order
+    template_name = 'store/order_detail.html'
+    context_object_name = 'order'
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+
+
+
+@login_required
+def payment_view(request):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart_items = cart.items.all()
+    total_price = sum(item.product.price * item.quantity for item in cart_items)
+
+    if request.method == 'POST':
+        payment_amount = total_price
+        payment = shelf.payment 
+        reference_code = payment.pay(payment_amount)
+        
+        if payment.confirm(reference_code)==total_price:
+            # Create order
+            order = Order.objects.create(user=request.user, total_price=total_price, reference_code=reference_code)
+            for item in cart_items:
+                order.products.add(item.product, through_defaults={'quantity': item.quantity})
+            
+            # Clear the cart
+            cart.items.all().delete()
+            
+            return redirect('order_list')
+        else:
+            return render(request, 'store/payment.html', {'error': 'Payment failed. Please try again.', 'total_price': total_price})
+
+    return render(request, 'store/payment.html', {'total_price': total_price})

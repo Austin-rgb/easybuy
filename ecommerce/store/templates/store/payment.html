@@ -5,10 +5,18 @@
 {% block content %}
 <div class="container mt-5">
     <h2>Payment</h2>
-    <p>Total Amount: ${{ total_amount }}</p>
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+        <div class="form-group">
+            <label for="totalPrice">Total Price:</label>
+            <input type="text" id="totalPrice" class="form-control" value="${{ total_price|floatformat:2 }}" readonly>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Pay</button>
     </form>
 </div>
 {% endblock %}

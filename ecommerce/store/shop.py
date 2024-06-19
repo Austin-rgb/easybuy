@@ -6,11 +6,14 @@ class Payment:
         self.payments = {}
 
     def pay(self, amount:float)->str:
-        ref_code = random.choices(string.ascii_uppercase,k=10)
+        ref_code = ''.join(random.choices(string.ascii_uppercase,k=10))
         self.payments[ref_code]=amount
+        return ref_code
 
     def confirm (self,ref_code:str)->float:
         amount = self.payments.get(ref_code)
+        print('confirming:',ref_code)
+        print('amount:',amount)
         return amount
 
 

@@ -10,6 +10,7 @@ urlpatterns = [
     path('upload_product/', upload_product, name='upload_product'),
     path('orders/', OrderListView.as_view(), name='order_list'),
     path('products/<int:pk>/',ProductDetailView.as_view(),name='product_detail'),
-    path('payment/', payment_page, name='payment_page'),
+    path('payment/', payment_view, name='payment_page'),
     path('payment/confirm/', payment_confirm, name='payment_confirm'),
+    path('orders/<int:pk>/', OrderDetailView.as_view(), name='order_detail'),
 ]
